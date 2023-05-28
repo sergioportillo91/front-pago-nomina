@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pago nomina empleados</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .result-block {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    .result-item {
+      margin-bottom: 10px;
+    }
+
+    .result-label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .result-text {
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1 class="text-secondary text-center">Consultar pago nomina empleado</h1>
+    <div class="container mt-2">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title text-center">Consulta de Empleado</h5>
+              <form @submit.prevent="fetchData">
+                <div class="form-group mb-2">
+                  <input class="form-control form-control-lg" type="text" placeholder="Ingrese el empleado" v-model="nombre_empleado" required>
+                </div>
+                <div class="form-group">
+                  <input class="form-control form-control-lg" type="date" placeholder="2023-01-01" v-model="fecha_pago" required>
+                </div>
+                <button class="btn btn-primary btn-block mt-2" type="submit">Consultar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mt-4" v-if="empleado.nombreEmpleado">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h2 class="text-secondary">Resultado de empleado</h2>
+              <div class="result-block">
+                <div class="result-item">
+                  <span class="result-label">Empleado:</span>
+                  <p class="result-text">{{ empleado.nombreEmpleado }}</p>
+                </div>
+                <div class="result-item">
+                  <span class="result-label">Fecha de pago:</span>
+                  <p class="result-text">{{ empleado.fechaPagoQuincena }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const url = 'http://localhost:8080/calcularFechaPago';
+
+    new Vue({
+      el: '#app',
+      data: {
+        empleado: {
+          nombreEmpleado: '',
+          fechaPagoQuincena: ''
+        },
+        nombre_empleado: '',
+        fecha_pago: ''
+      },
+      methods: {
+        async fetchData() {
+        
+          try {
+            const response = await fetch(`${url}?nombreEmpleado=${this.nombre_empleado}&fechaIngresada=${this.fecha_pago}`);
+            const data = await response.json();
+            this.empleado = data;
+            this.limpiarCampos();
+          } catch (error) {
+            console.log(error);
+          }
+        },
+        limpiarCampos() {
+          this.nombre_empleado = '';
+          this.fecha_pago = '';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
